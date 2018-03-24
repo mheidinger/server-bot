@@ -8,8 +8,8 @@ const db = low(adapter);
 db.defaults({ user: [] }).write();
 const userDB = db.get("user");
 
-const telegraf = require("telegraf");
-const rancherBot = new telegraf(process.env.BOT_TOKEN);
+const Telegraf = require("telegraf");
+const rancherBot = new Telegraf(process.env.BOT_TOKEN);
 
 const noAuthCommands = [ "/start", "/help" ];
 
