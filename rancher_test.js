@@ -2,7 +2,7 @@ require("dotenv").config();
 
 const Rancher = require("rancher-client");
  
-const client = new Rancher.Client({ url: "http://max-heidinger.de:8089/v2-beta", access_key: process.env.RANCHER_KEY, secret_key: process.env.RANCHER_SECRET });
+const client = new Rancher.Client({ url: process.env.RANCHER_URL, access_key: process.env.RANCHER_KEY, secret_key: process.env.RANCHER_SECRET });
 
 var stack;
 
