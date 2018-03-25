@@ -11,6 +11,8 @@ const userDB = db.get("user");
 const Telegraf = require("telegraf");
 const rancherBot = new Telegraf(process.env.BOT_TOKEN);
 
+const rancher = require("./rancher");
+
 const noAuthCommands = [ "/start", "/help" ];
 
 rancherBot.use((ctx, next) => {
@@ -32,6 +34,10 @@ rancherBot.use((ctx, next) => {
 rancherBot.start((ctx) => ctx.reply("Welcome to the rancher alert bot! 🎉\nFirst unlock the bot with the correct password and then try /help for all commands 😁"));
 
 rancherBot.command("/help", (ctx) => ctx.reply("Nothing here yet 😢"));
+
+rancherBot.command("/stackStatus", (ctx) => {
+	rancher.getStackStatus().then((infoString) => ctx.reply(infoString), (reason) => ctx.reply(reason.toString()));
+});
 
 rancherBot.on("message", (ctx) => {
 	if (!ctx.chat.id.toString().startsWith("-")) {
