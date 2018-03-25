@@ -23,7 +23,8 @@ npm manifest:
     "license": "MIT",
     "main": "server.js",
     "scripts": {
-      "start": "node server.js"
+      "test": "echo \"Error: no test specified\" && exit 1",
+      "start": "node src/server.js"
     },
     "dependencies": {
       "dotenv": "^5.0.1",
@@ -1195,7 +1196,7 @@ Trace:
   Error: Command failed.
   Exit code: 1
   Command: C:\Windows\system32\cmd.exe
-  Arguments: /d /s /c node server.js
+  Arguments: /d /s /c node src/server.js
   Directory: C:\Users\Max14\Projects\rancher-alarm-bot
   Output:
   

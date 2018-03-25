@@ -1,7 +1,7 @@
 FROM node:alpine
 
-COPY . /app
-WORKDIR /app
+COPY . /usr/src/app
+WORKDIR /usr/src/app
 
 RUN yarn
 
