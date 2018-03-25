@@ -1,0 +1,13 @@
+pipeline:
+  publish-docker:
+    image: docker
+    secrets: [ docker_username, docker_password ]
+    commands:
+      - docker login --username=$DOCKER_USERNAME --password=$DOCKER_PASSWORD registry.max-heidinger.de
+      - docker build -t registry.max-heidinger.de/rancher-alarm-bot:latest .
+      - docker push registry.max-heidinger.de/rancher-alarm-bot:latest
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    when:
+      branch: master
+      event: push
