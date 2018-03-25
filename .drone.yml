@@ -11,3 +11,15 @@ pipeline:
     when:
       branch: master
       event: push
+
+  rancher-deploy:
+    image: peloton/drone-rancher
+    url: http://max-heidinger.de:8089
+    secrets: [ rancher_access_key, rancher_secret_key ]
+    service: bots/rancher-alarm-bot
+    docker_image: registry.max-heidinger.de/rancher-alarm-bot:latest
+    confirm: true
+    timeout: 15
+    when:
+      branch: master
+      event: push
