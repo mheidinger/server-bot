@@ -19,7 +19,7 @@ pipeline:
     service: bots/rancher-alarm-bot
     docker_image: registry.max-heidinger.de/rancher-alarm-bot:latest
     confirm: true
-    timeout: 15
+    timeout: 60
     when:
       branch: master
       event: push
