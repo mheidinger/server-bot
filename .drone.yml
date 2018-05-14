@@ -4,8 +4,8 @@ pipeline:
     secrets: [ docker_username, docker_password ]
     commands:
       - docker login --username=$DOCKER_USERNAME --password=$DOCKER_PASSWORD registry.max-heidinger.de
-      - docker build -t registry.max-heidinger.de/rancher-alarm-bot:latest .
-      - docker push registry.max-heidinger.de/rancher-alarm-bot:latest
+      - docker build -t registry.max-heidinger.de/server-bot:latest .
+      - docker push registry.max-heidinger.de/server-bot:latest
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     when:
@@ -16,8 +16,8 @@ pipeline:
     image: peloton/drone-rancher
     url: http://max-heidinger.de:8089
     secrets: [ rancher_access_key, rancher_secret_key ]
-    service: bots/rancher-alarm-bot
-    docker_image: registry.max-heidinger.de/rancher-alarm-bot:latest
+    service: bots/server-bot
+    docker_image: registry.max-heidinger.de/server-bot:latest
     confirm: true
     timeout: 60
     when:

@@ -1,5 +1,6 @@
-# rancher-alarm-bot
-Telegram bot that sends you notifications about the status of your rancher setup!
+# server-bot
+Telegram bot that sends you notifications about the status of your server setup!
+This includes for now rancher and drone ci.
 
 ## Needed .env file
 ```
