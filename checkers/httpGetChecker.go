@@ -2,6 +2,7 @@ package checkers
 
 import (
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/mheidinger/server-bot/services"
@@ -23,17 +24,16 @@ func NewHTTPGetChecker() *HTTPGetChecker {
 // RunTest runs the http get test against the given service
 func (checker *HTTPGetChecker) RunTest(service *services.Service) *CheckResult {
 	var url string
-	urlInt, ok := service.Config["URL"]
-	if ok {
+	if urlInt, ok := service.Config["URL"]; ok {
 		url, ok = urlInt.(string)
 		if !ok {
 			return wrongConfigRes
 		}
 	}
+	url = checker.sanitizeURL(url)
 
 	var expRes = 200
-	expRespInt, ok := service.Config["expectedResp"]
-	if ok {
+	if expRespInt, ok := service.Config["expectedResp"]; ok {
 		expRes, _ = expRespInt.(int)
 	}
 
@@ -60,4 +60,12 @@ func (checker *HTTPGetChecker) RunTest(service *services.Service) *CheckResult {
 
 	res.Values = resVals
 	return res
+}
+
+func (checker *HTTPGetChecker) sanitizeURL(url string) string {
+	if !strings.Contains(url, "://") {
+		return "http://" + url
+	}
+
+	return url
 }
