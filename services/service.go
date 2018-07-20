@@ -2,16 +2,11 @@ package services
 
 // Service represents one service that is to be checked by a checker
 type Service struct {
-	Name        string
-	CheckerName string
-	Config      map[string]interface{}
-	Interval    int
+	Name        string                 `json:"name,omitempty"`
+	CheckerName string                 `json:"checker_name,omitempty"`
+	Config      map[string]interface{} `json:"config,omitempty"`
+	Interval    int                    `json:"interval,omitempty"`
 }
 
-// GetServices returns all registered services to be checked
-func GetServices() []*Service {
-	websiteServiceConfig := map[string]interface{}{"URL": "max-heidinger.de", "expectedResponse": 200}
-	websiteService := &Service{Name: "Own Website", CheckerName: "HTTPGetChecker", Config: websiteServiceConfig, Interval: 5}
-
-	return []*Service{websiteService}
-}
+// Services is the list of all active services
+var Services []*Service

@@ -5,16 +5,22 @@ import (
 	"sync"
 	"time"
 
+	"github.com/mheidinger/server-bot/services"
+
 	"github.com/mheidinger/server-bot/checkers"
+	"github.com/mheidinger/server-bot/config"
 )
 
 func main() {
+	completeConfig := config.LoadConfig()
+
 	checkers.Init()
+	services.Services = completeConfig.Services
 
 	results := map[string]*checkers.CheckResult{}
 	resultsMutex := &sync.Mutex{}
 
-	runResultCollector(resultsMutex, results)
+	runResultCollector(results, resultsMutex)
 
 	go func() {
 		for true {
@@ -28,5 +34,5 @@ func main() {
 		}
 	}()
 
-	time.Sleep(time.Minute * 5)
+	StartBot(completeConfig.General.TelegramToken, completeConfig.General.BotSecret, results, resultsMutex)
 }

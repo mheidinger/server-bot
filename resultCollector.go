@@ -8,10 +8,10 @@ import (
 	"github.com/mheidinger/server-bot/services"
 )
 
-func runResultCollector(mutex *sync.Mutex, results map[string]*checkers.CheckResult) {
+func runResultCollector(results map[string]*checkers.CheckResult, mutex *sync.Mutex) {
 	go func() {
 		for true {
-			for _, service := range services.GetServices() {
+			for _, service := range services.Services {
 				mutex.Lock()
 				exisRes, exisResOk := results[service.Name]
 
