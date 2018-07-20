@@ -2,34 +2,31 @@ package main
 
 import (
 	"fmt"
+	"sync"
+	"time"
 
 	"github.com/mheidinger/server-bot/checkers"
-	"github.com/mheidinger/server-bot/services"
 )
 
 func main() {
-	websiteServiceConfig := map[string]interface{}{"URL": "max-heidinger.de", "expectedResponse": 200}
-	websiteService := &services.Service{Name: "Own Website", CheckerName: "HTTPGetChecker", Config: websiteServiceConfig}
-	checkServices := []*services.Service{websiteService}
-
-	httpGetChecker := checkers.NewHTTPGetChecker()
+	checkers.Init()
 
 	results := map[string]*checkers.CheckResult{}
+	resultsMutex := &sync.Mutex{}
 
-	for _, service := range checkServices {
-		var checkRes *checkers.CheckResult
-		switch service.CheckerName {
-		case "HTTPGetChecker":
-			checkRes = httpGetChecker.RunTest(service)
+	runResultCollector(resultsMutex, results)
+
+	go func() {
+		for true {
+			resultsMutex.Lock()
+			for _, res := range results {
+				fmt.Println(res)
+			}
+			resultsMutex.Unlock()
+
+			time.Sleep(time.Second * 15)
 		}
+	}()
 
-		if exisRes, ok := results[service.Name]; ok {
-			checkRes.LastResult = exisRes
-		}
-		results[service.Name] = checkRes
-	}
-
-	for _, res := range results {
-		fmt.Println(res)
-	}
+	time.Sleep(time.Minute * 5)
 }

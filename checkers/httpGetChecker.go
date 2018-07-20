@@ -13,9 +13,6 @@ type HTTPGetChecker struct {
 	httpClient http.Client
 }
 
-var wrongConfigVals = map[string]interface{}{"error": "Wrong configuration for HTTPGetChecker"}
-var wrongConfigRes = &CheckResult{Success: false, TimeStamp: time.Now(), Values: wrongConfigVals}
-
 // NewHTTPGetChecker returns a new instance of the checker
 func NewHTTPGetChecker() *HTTPGetChecker {
 	return &HTTPGetChecker{}
@@ -27,7 +24,8 @@ func (checker *HTTPGetChecker) RunTest(service *services.Service) *CheckResult {
 	if urlInt, ok := service.Config["URL"]; ok {
 		url, ok = urlInt.(string)
 		if !ok {
-			return wrongConfigRes
+			WrongConfigRes.TimeStamp = time.Now()
+			return WrongConfigRes
 		}
 	}
 	url = checker.sanitizeURL(url)

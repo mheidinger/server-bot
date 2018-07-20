@@ -6,3 +6,11 @@ type Service struct {
 	CheckerName string
 	Config      map[string]interface{}
 }
+
+// GetServices returns all registered services to be checked
+func GetServices() []*Service {
+	websiteServiceConfig := map[string]interface{}{"URL": "max-heidinger.de", "expectedResponse": 200}
+	websiteService := &Service{Name: "Own Website", CheckerName: "HTTPGetChecker", Config: websiteServiceConfig}
+
+	return []*Service{websiteService}
+}
