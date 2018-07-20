@@ -12,6 +12,18 @@ func runResultCollector(mutex *sync.Mutex, results map[string]*checkers.CheckRes
 	go func() {
 		for true {
 			for _, service := range services.GetServices() {
+				mutex.Lock()
+				exisRes, exisResOk := results[service.Name]
+
+				if exisResOk {
+					newTestTime := exisRes.TimeStamp.Add(time.Second * time.Duration(service.Interval))
+					if time.Now().Before(newTestTime) {
+						mutex.Unlock()
+						continue
+					}
+				}
+				mutex.Unlock()
+
 				var result *checkers.CheckResult
 				if checker, ok := checkers.Checkers[service.CheckerName]; ok {
 					result = checker.RunTest(service)
@@ -21,14 +33,15 @@ func runResultCollector(mutex *sync.Mutex, results map[string]*checkers.CheckRes
 				}
 
 				mutex.Lock()
-				if exisRes, ok := results[service.Name]; ok {
+				if exisResOk {
 					result.LastResult = exisRes
 				}
+
 				results[service.Name] = result
 				mutex.Unlock()
 			}
 
-			time.Sleep(time.Second * 30)
+			time.Sleep(time.Second)
 		}
 	}()
 }
