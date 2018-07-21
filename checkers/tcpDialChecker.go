@@ -56,6 +56,17 @@ func (checker *TCPDialChecker) RunTest(service *services.Service) *CheckResult {
 	return res
 }
 
+// NeedsNotification returns whether the result needs to be notified depending on lastResult
+func (checker *TCPDialChecker) NeedsNotification(checkResult *CheckResult) bool {
+	if checkResult.LastResult != nil && checkResult.Success != checkResult.LastResult.Success {
+		return true
+	} else if checkResult.LastResult == nil && checkResult.Success == false {
+		return true
+	}
+
+	return false
+}
+
 func (checker *TCPDialChecker) sanitizeURL(url string) string {
 	if !strings.Contains(url, "://") {
 		return "http://" + url

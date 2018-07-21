@@ -39,7 +39,9 @@ func (checker *HTTPGetChecker) RunTest(service *services.Service) *CheckResult {
 	t1 := time.Now()
 	response, err := checker.httpClient.Get(url)
 	latency := time.Now().Sub(t1).Seconds()
-	defer response.Body.Close()
+	if response != nil {
+		defer response.Body.Close()
+	}
 
 	var resVals = make(map[string]interface{})
 	var res = &CheckResult{Service: service, TimeStamp: time.Now()}
@@ -60,6 +62,17 @@ func (checker *HTTPGetChecker) RunTest(service *services.Service) *CheckResult {
 
 	res.Values = resVals
 	return res
+}
+
+// NeedsNotification returns whether the result needs to be notified depending on lastResult
+func (checker *HTTPGetChecker) NeedsNotification(checkResult *CheckResult) bool {
+	if checkResult.LastResult != nil && checkResult.Success != checkResult.LastResult.Success {
+		return true
+	} else if checkResult.LastResult == nil && checkResult.Success == false {
+		return true
+	}
+
+	return false
 }
 
 func (checker *HTTPGetChecker) sanitizeURL(url string) string {

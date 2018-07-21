@@ -61,7 +61,9 @@ func (checker *HTTPPostChecker) RunTest(service *services.Service) *CheckResult 
 	t1 := time.Now()
 	response, err := checker.httpClient.Post(url, contentType, bytes.NewBufferString(body))
 	latency := time.Now().Sub(t1).Seconds()
-	defer response.Body.Close()
+	if response != nil {
+		defer response.Body.Close()
+	}
 
 	bodyBytes, _ := ioutil.ReadAll(response.Body)
 	bodyString := string(bodyBytes)
@@ -91,6 +93,17 @@ func (checker *HTTPPostChecker) RunTest(service *services.Service) *CheckResult 
 
 	res.Values = resVals
 	return res
+}
+
+// NeedsNotification returns whether the result needs to be notified depending on lastResult
+func (checker *HTTPPostChecker) NeedsNotification(checkResult *CheckResult) bool {
+	if checkResult.LastResult != nil && checkResult.Success != checkResult.LastResult.Success {
+		return true
+	} else if checkResult.LastResult == nil && checkResult.Success == false {
+		return true
+	}
+
+	return false
 }
 
 func (checker *HTTPPostChecker) sanitizeURL(url string) string {

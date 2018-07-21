@@ -16,7 +16,7 @@ var TelegramUsers []int
 var noAuthCommands = [...]string{"/start", "/help"}
 
 // StartBot creates and starts the telegram bot; Blocking while bot runs!
-func StartBot(telegramToken, botSecret string, results map[string]*checkers.CheckResult, mutex *sync.Mutex) {
+func StartBot(telegramToken, botSecret string, results map[string]*checkers.CheckResult, mutex *sync.Mutex, notificationChannel chan *checkers.CheckResult) {
 	bot, err := telebot.NewBot(telebot.Settings{
 		Token: telegramToken,
 	})
@@ -103,7 +103,26 @@ func StartBot(telegramToken, botSecret string, results map[string]*checkers.Chec
 		bot.Send(m.Sender, "Unknown command 😱\nTry /help to list the best features 🐬")
 	})
 
+	go func() {
+		for result := range notificationChannel {
+			buffer := bytes.NewBufferString("Check for ")
+			buffer.WriteString(result.Service.Name)
+			if result.Success {
+				buffer.WriteString(" succeeded ✔️\n")
+			} else {
+				buffer.WriteString(" failed ❌\n")
+			}
+			buffer.WriteString("Get more info on /overview 🐬")
+			message := buffer.String()
+
+			for _, user := range TelegramUsers {
+				bot.Send(&telebot.User{ID: user}, message)
+			}
+		}
+	}()
+
 	bot.Start()
+
 }
 
 func addUser(user int) {

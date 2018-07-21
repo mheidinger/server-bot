@@ -8,7 +8,7 @@ import (
 	"github.com/mheidinger/server-bot/services"
 )
 
-func runResultCollector(results map[string]*checkers.CheckResult, mutex *sync.Mutex) {
+func runResultCollector(results map[string]*checkers.CheckResult, mutex *sync.Mutex, notificationChannel chan *checkers.CheckResult) {
 	go func() {
 		for true {
 			for _, service := range services.Services {
@@ -25,7 +25,8 @@ func runResultCollector(results map[string]*checkers.CheckResult, mutex *sync.Mu
 				mutex.Unlock()
 
 				var result *checkers.CheckResult
-				if checker, ok := checkers.Checkers[service.CheckerName]; ok {
+				checker, checkerOK := checkers.Checkers[service.CheckerName]
+				if checkerOK {
 					result = checker.RunTest(service)
 				} else {
 					checkers.CheckerNotFoundRes.TimeStamp = time.Now()
@@ -36,6 +37,10 @@ func runResultCollector(results map[string]*checkers.CheckResult, mutex *sync.Mu
 				mutex.Lock()
 				if exisResOk {
 					result.LastResult = exisRes
+				}
+
+				if checkerOK && checker.NeedsNotification(result) {
+					notificationChannel <- result
 				}
 
 				results[service.Name] = result

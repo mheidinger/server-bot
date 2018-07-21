@@ -7,6 +7,7 @@ import (
 // Checker declares all functions needed for a checker to be used
 type Checker interface {
 	RunTest(service *services.Service) *CheckResult
+	NeedsNotification(checkResult *CheckResult) bool
 }
 
 // Default Error Results
