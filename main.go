@@ -1,12 +1,17 @@
 package main
 
 import (
+	"fmt"
+	"os"
 	"sync"
 
 	"github.com/mheidinger/server-bot/checkers"
+	clog "gopkg.in/clog.v1"
 )
 
 func main() {
+	initLogging()
+
 	LoadConfig()
 
 	checkers.Init()
@@ -18,4 +23,12 @@ func main() {
 	runResultCollector(results, resultsMutex, notificationChannel)
 
 	StartBot(loadedConfig.General.TelegramToken, loadedConfig.General.BotSecret, results, resultsMutex, notificationChannel)
+}
+
+func initLogging() {
+	err := clog.New(clog.CONSOLE, clog.ConsoleConfig{})
+	if err != nil {
+		fmt.Printf("Fail to create new logger: %v\n", err)
+		os.Exit(1)
+	}
 }

@@ -2,10 +2,10 @@ package main
 
 import (
 	"encoding/json"
-	"log"
 	"os"
 
 	"github.com/mheidinger/server-bot/services"
+	clog "gopkg.in/clog.v1"
 )
 
 // ConfigFile is the location of the config file
@@ -31,13 +31,13 @@ func LoadConfig() {
 	configFile, err := os.Open(ConfigFile)
 	defer configFile.Close()
 	if err != nil {
-		log.Fatalf("Error opening config file: %v", err)
+		clog.Fatal(0, "Error opening config file: %v", err)
 	}
 
 	jsonParser := json.NewDecoder(configFile)
 	err = jsonParser.Decode(&loadedConfig)
 	if err != nil {
-		log.Fatalf("Error parsing config file: %v", err)
+		clog.Fatal(0, "Error parsing config file: %v", err)
 	}
 
 	services.Services = loadedConfig.Services
@@ -52,13 +52,13 @@ func WriteConfig() {
 	configFile, err := os.Create(ConfigFile)
 	defer configFile.Close()
 	if err != nil {
-		log.Fatalf("Error opening config file: %v", err)
+		clog.Fatal(0, "Error opening config file: %v", err)
 	}
 
 	jsonWriter := json.NewEncoder(configFile)
 	jsonWriter.SetIndent("", "\t")
 	err = jsonWriter.Encode(&loadedConfig)
 	if err != nil {
-		log.Fatalf("Error writing config file: %v", err)
+		clog.Fatal(0, "Error writing config file: %v", err)
 	}
 }

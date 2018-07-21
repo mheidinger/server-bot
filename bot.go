@@ -2,18 +2,19 @@ package main
 
 import (
 	"bytes"
-	"log"
 	"strings"
 	"sync"
 	"time"
 
 	"github.com/mheidinger/server-bot/checkers"
+	clog "gopkg.in/clog.v1"
 	telebot "gopkg.in/tucnak/telebot.v2"
 )
 
 // TelegramUsers contains all telegram user ids of authorized users
 var TelegramUsers []int
 var noAuthCommands = [...]string{"/start", "/help"}
+var markdownOptions = &telebot.SendOptions{ParseMode: telebot.ModeMarkdown}
 
 // StartBot creates and starts the telegram bot; Blocking while bot runs!
 func StartBot(telegramToken, botSecret string, results map[string]*checkers.CheckResult, mutex *sync.Mutex, notificationChannel chan *checkers.CheckResult) {
@@ -46,11 +47,17 @@ func StartBot(telegramToken, botSecret string, results map[string]*checkers.Chec
 		if foundUser == -1 && !isNoAuthCommand {
 			if upd.Message.Text == botSecret {
 				addUser(upd.Message.Sender.ID)
-				bot.Send(upd.Message.Sender, "Correct password! 🐬")
+				_, err := bot.Send(upd.Message.Sender, "Correct password! 🐬")
+				if err != nil {
+					clog.Error(0, "Failed to send correct password message: %v", err)
+				}
 				return false
 			}
 
-			bot.Send(upd.Message.Sender, "⛔ You are not authorized! ⛔\nEnter the correct password to gain access!")
+			_, err := bot.Send(upd.Message.Sender, "⛔ *You are not authorized!* ⛔\nEnter the correct password to gain access!", markdownOptions)
+			if err != nil {
+				clog.Error(0, "Failed to send unauthorized message: %v", err)
+			}
 			return false
 		}
 
@@ -60,7 +67,7 @@ func StartBot(telegramToken, botSecret string, results map[string]*checkers.Chec
 	bot.Poller = authPoller
 
 	if err != nil {
-		log.Fatalf("Error setting up the telegram bot: %v", err)
+		clog.Fatal(0, "Error setting up the telegram bot: %v", err)
 	}
 
 	bot.Handle("/start", func(m *telebot.Message) {
@@ -94,13 +101,17 @@ func StartBot(telegramToken, botSecret string, results map[string]*checkers.Chec
 		}
 		mutex.Unlock()
 
-		bot.Send(m.Sender, buffer.String())
-
-		time.Sleep(time.Second * 15)
+		_, err := bot.Send(m.Sender, buffer.String())
+		if err != nil {
+			clog.Error(0, "Failed to send overview message: %v", err)
+		}
 	})
 
 	bot.Handle(telebot.OnText, func(m *telebot.Message) {
-		bot.Send(m.Sender, "Unknown command 😱\nTry /help to list the best features 🐬")
+		_, err := bot.Send(m.Sender, "Unknown command 😱\nTry /help to list the best features 🐬")
+		if err != nil {
+			clog.Error(0, "Failed to send unknown command message: %v", err)
+		}
 	})
 
 	go func() {
@@ -116,7 +127,10 @@ func StartBot(telegramToken, botSecret string, results map[string]*checkers.Chec
 			message := buffer.String()
 
 			for _, user := range TelegramUsers {
-				bot.Send(&telebot.User{ID: user}, message)
+				_, err := bot.Send(&telebot.User{ID: user}, message)
+				if err != nil {
+					clog.Error(0, "Failed to send notification message to %v: %v", user, err)
+				}
 			}
 		}
 	}()
