@@ -25,6 +25,7 @@ func (checker *HTTPGetChecker) RunTest(service *services.Service) *CheckResult {
 		url, ok = urlInt.(string)
 		if !ok {
 			WrongConfigRes.TimeStamp = time.Now()
+			WrongConfigRes.Service = service
 			return WrongConfigRes
 		}
 	}
@@ -40,7 +41,7 @@ func (checker *HTTPGetChecker) RunTest(service *services.Service) *CheckResult {
 	latency := time.Now().Sub(t1).Seconds()
 
 	var resVals = make(map[string]interface{})
-	var res = &CheckResult{TimeStamp: time.Now()}
+	var res = &CheckResult{Service: service, TimeStamp: time.Now()}
 	if err != nil {
 		res.Success = false
 		resVals["error"] = err.Error()

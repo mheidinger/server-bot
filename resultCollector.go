@@ -29,6 +29,7 @@ func runResultCollector(results map[string]*checkers.CheckResult, mutex *sync.Mu
 					result = checker.RunTest(service)
 				} else {
 					checkers.CheckerNotFoundRes.TimeStamp = time.Now()
+					checkers.CheckerNotFoundRes.Service = service
 					result = checkers.CheckerNotFoundRes
 				}
 
