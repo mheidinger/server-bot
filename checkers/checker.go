@@ -26,4 +26,6 @@ var Checkers map[string]Checker
 func Init() {
 	Checkers = make(map[string]Checker, 1)
 	Checkers["HTTPGetChecker"] = NewHTTPGetChecker()
+	Checkers["HTTPPostChecker"] = NewHTTPPostChecker()
+	Checkers["TCPDialChecker"] = NewTCPDialChecker()
 }
