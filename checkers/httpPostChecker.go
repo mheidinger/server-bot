@@ -82,8 +82,8 @@ func (checker *HTTPPostChecker) RunTest(service *services.Service) *CheckResult 
 	} else if expBody != "" && bodyString != expBody {
 		res.Success = false
 		resVals["error"] = "Got unexpected response body"
-		resVals["resp_body"] = bodyString
-		resVals["exp_resp_body"] = expBody
+		resVals["_resp_body"] = bodyString
+		resVals["_exp_resp_body"] = expBody
 		resVals["latency"] = latency
 	} else {
 		res.Success = true

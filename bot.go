@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"fmt"
 	"strings"
 	"sync"
 	"time"
@@ -79,25 +80,35 @@ func StartBot(telegramToken, botSecret string, results map[string]*checkers.Chec
 
 		mutex.Lock()
 		for _, res := range results {
+			buffer.WriteString("==========================\n")
+
 			buffer.WriteString(res.Service.Name)
 			buffer.WriteString(":\n")
 
-			buffer.WriteString("\tStatus: ")
+			buffer.WriteString("\t\tStatus: ")
 			if res.Success {
 				buffer.WriteString("✔️\n")
 			} else {
 				buffer.WriteString("❌\n")
 			}
 
-			buffer.WriteString("\tChecker: ")
+			buffer.WriteString("\t\tChecker: ")
 			buffer.WriteString(res.Service.CheckerName)
 			buffer.WriteString("\n")
 
-			buffer.WriteString("\tLast Check: ")
-			buffer.WriteString(res.TimeStamp.String())
+			buffer.WriteString("\t\tLast Check: ")
+			buffer.WriteString(res.TimeStamp.Format("02.01.2006 15:04:05"))
 			buffer.WriteString("\n")
 
-			buffer.WriteString("======================\n")
+			for key, value := range res.Values {
+				if !strings.HasPrefix(key, "_") {
+					buffer.WriteString("\t\t")
+					buffer.WriteString(key)
+					buffer.WriteString(": ")
+					buffer.WriteString(fmt.Sprintf("%v", value))
+					buffer.WriteString("\n")
+				}
+			}
 		}
 		mutex.Unlock()
 
