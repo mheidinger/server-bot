@@ -2,10 +2,25 @@
 
 
 [[projects]]
+  name = "github.com/StackExchange/wmi"
+  packages = ["."]
+  revision = "5d049714c4a64225c3c79a7cf7d02f7fb5b96338"
+  version = "1.0.0"
+
+[[projects]]
   name = "github.com/fatih/color"
   packages = ["."]
   revision = "5b77d2a35fb0ede96d138fc9a99f5c9b6aef11b4"
   version = "v1.7.0"
+
+[[projects]]
+  name = "github.com/go-ole/go-ole"
+  packages = [
+    ".",
+    "oleutil"
+  ]
+  revision = "a41e3c4b706f6ae8dfbff342b06e40fa4d2d0506"
+  version = "v1.2.1"
 
 [[projects]]
   name = "github.com/mattn/go-colorable"
@@ -26,9 +41,21 @@
   version = "v0.8.0"
 
 [[projects]]
+  name = "github.com/shirou/gopsutil"
+  packages = [
+    "internal/common",
+    "mem"
+  ]
+  revision = "4a180b209f5f494e5923cfce81ea30ba23915877"
+  version = "v2.18.06"
+
+[[projects]]
   branch = "master"
   name = "golang.org/x/sys"
-  packages = ["unix"]
+  packages = [
+    "unix",
+    "windows"
+  ]
   revision = "ac767d655b305d4e9612f5f6e33120b9176c4ad4"
 
 [[projects]]
@@ -46,6 +73,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "07c8c32149ae516a97047f154bb4a61c0e2a612ba5b355b109b038ae07c06a91"
+  inputs-digest = "813fbd39c52689403c67e48f5953fbd025f3fdd03d4a52028b2bbe61f6389a22"
   solver-name = "gps-cdcl"
   solver-version = 1
