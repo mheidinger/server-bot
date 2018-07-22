@@ -30,4 +30,5 @@ func Init() {
 	Checkers["HTTPPostChecker"] = NewHTTPPostChecker()
 	Checkers["TCPDialChecker"] = NewTCPDialChecker()
 	Checkers["MemChecker"] = NewMemChecker()
+	Checkers["CPUChecker"] = NewCPUChecker()
 }
