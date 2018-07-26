@@ -6,6 +6,8 @@ import (
 	"strings"
 	"time"
 
+	"gopkg.in/clog.v1"
+
 	"github.com/mheidinger/server-bot/services"
 )
 
@@ -31,6 +33,8 @@ func (checker *TCPDialChecker) RunTest(service *services.Service) *CheckResult {
 		}
 	}
 	url = checker.sanitizeURL(url)
+
+	clog.Trace("Run TCPDialChecker against %s", url)
 
 	var timeout = 5
 	if timeoutInt, ok := service.Config["timeout"]; ok {

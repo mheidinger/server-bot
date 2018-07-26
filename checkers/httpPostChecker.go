@@ -7,8 +7,13 @@ import (
 	"strings"
 	"time"
 
+	"gopkg.in/clog.v1"
+
 	"github.com/mheidinger/server-bot/services"
 )
+
+const defaultContentType = "application/json"
+const defaultExpBody = ""
 
 // HTTPPostChecker represents a checker that checks http post requests for wanted response codes and reponse body
 type HTTPPostChecker struct {
@@ -43,20 +48,28 @@ func (checker *HTTPPostChecker) RunTest(service *services.Service) *CheckResult 
 		}
 	}
 
-	var contentType = "application/json"
+	var contentType = defaultContentType
 	if contentTypeInt, ok := service.Config["content_type"]; ok {
-		contentType, _ = contentTypeInt.(string)
+		if contentType, ok = contentTypeInt.(string); !ok {
+			contentType = defaultContentType
+		}
 	}
 
-	var expRes = 200
+	var expRes = defaultExpRes
 	if expRespInt, ok := service.Config["expected_resp"]; ok {
-		expRes, _ = expRespInt.(int)
+		if expRes, ok = expRespInt.(int); !ok {
+			expRes = defaultExpRes
+		}
 	}
 
-	var expBody = ""
+	var expBody = defaultExpBody
 	if expBodyInt, ok := service.Config["expected_body"]; ok {
-		expBody, _ = expBodyInt.(string)
+		if expBody, ok = expBodyInt.(string); !ok {
+			expBody = defaultExpBody
+		}
 	}
+
+	clog.Trace("Run HTTPPostChecker against %s with %s: expRes: %v", url, contentType, expRes)
 
 	t1 := time.Now()
 	response, err := checker.httpClient.Post(url, contentType, bytes.NewBufferString(body))

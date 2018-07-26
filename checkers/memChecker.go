@@ -3,9 +3,13 @@ package checkers
 import (
 	"time"
 
+	"gopkg.in/clog.v1"
+
 	"github.com/mheidinger/server-bot/services"
 	"github.com/shirou/gopsutil/mem"
 )
+
+const defaultMaxMemUsedPercent = 85.0
 
 // MemChecker represents a checker that checks the system memory
 type MemChecker struct {
@@ -18,10 +22,14 @@ func NewMemChecker() *MemChecker {
 
 // RunTest runs the system memory check
 func (checker *MemChecker) RunTest(service *services.Service) *CheckResult {
-	var maxMemUsedPercent = 85.0
+	var maxMemUsedPercent = defaultMaxMemUsedPercent
 	if maxMemUsedPercentInt, ok := service.Config["max_mem_used_percentage"]; ok {
-		maxMemUsedPercent, _ = maxMemUsedPercentInt.(float64)
+		if maxMemUsedPercent, ok = maxMemUsedPercentInt.(float64); !ok {
+			maxMemUsedPercent = defaultMaxMemUsedPercent
+		}
 	}
+
+	clog.Trace("Run MemChecker with: maxMemUsedPercent: %v", maxMemUsedPercent)
 
 	memory, err := mem.VirtualMemory()
 

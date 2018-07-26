@@ -3,9 +3,14 @@ package checkers
 import (
 	"time"
 
+	"gopkg.in/clog.v1"
+
 	"github.com/mheidinger/server-bot/services"
 	"github.com/shirou/gopsutil/cpu"
 )
+
+const defaultMaxCPUUsedPercent = 85.0
+const defaultMeasureDuration = 60
 
 // CPUChecker represents a checker that checks the system cpu
 type CPUChecker struct {
@@ -18,17 +23,23 @@ func NewCPUChecker() *CPUChecker {
 
 // RunTest runs the system cpu check
 func (checker *CPUChecker) RunTest(service *services.Service) *CheckResult {
-	var maxCPUUsedPercent = 85.0
+	var maxCPUUsedPercent = defaultMaxCPUUsedPercent
 	if maxCPUUsedPercentInt, ok := service.Config["max_cpu_used_percentage"]; ok {
-		maxCPUUsedPercent, _ = maxCPUUsedPercentInt.(float64)
+		if maxCPUUsedPercent, ok = maxCPUUsedPercentInt.(float64); !ok {
+			maxCPUUsedPercent = defaultMaxCPUUsedPercent
+		}
 	}
 
-	var measureInterval = 2
-	if measureIntervalInt, ok := service.Config["measure_interval"]; ok {
-		measureInterval, _ = measureIntervalInt.(int)
+	var measureDuration = defaultMeasureDuration
+	if measureDurationInt, ok := service.Config["measure_duration"]; ok {
+		if measureDuration, ok = measureDurationInt.(int); !ok {
+			measureDuration = defaultMeasureDuration
+		}
 	}
 
-	cpuPercent, err := cpu.Percent(time.Second*time.Duration(measureInterval), false)
+	clog.Trace("Run CPUChecker with: maxCPUUsedPercentage: %v; measureDuration: %v", maxCPUUsedPercent, measureDuration)
+
+	cpuPercent, err := cpu.Percent(time.Second*time.Duration(measureDuration), false)
 
 	var resVals = make(map[string]interface{})
 	var res = &CheckResult{Service: service, TimeStamp: time.Now()}

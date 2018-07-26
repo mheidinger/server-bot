@@ -20,7 +20,7 @@ func main() {
 	resultsMutex := &sync.Mutex{}
 	notificationChannel := make(chan *checkers.CheckResult, 20)
 
-	runResultCollector(results, resultsMutex, notificationChannel)
+	go runResultCollector(results, resultsMutex, notificationChannel)
 
 	StartBot(loadedConfig.General.TelegramToken, loadedConfig.General.BotSecret, results, resultsMutex, notificationChannel)
 }

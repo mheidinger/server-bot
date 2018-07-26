@@ -9,32 +9,28 @@ import (
 )
 
 func runResultCollector(results map[string]*checkers.CheckResult, mutex *sync.Mutex, notificationChannel chan *checkers.CheckResult) {
-	go func() {
-		for true {
-			for _, service := range services.Services {
-				mutex.Lock()
-				exisRes, exisResOk := results[service.Name]
+	for true {
+		for _, service := range services.Services {
+			newTestTime := service.LastStarted.Add(time.Second * time.Duration(service.Interval))
+			if time.Now().Before(newTestTime) {
+				continue
+			}
+			service.LastStarted = time.Now()
 
-				if exisResOk {
-					newTestTime := exisRes.TimeStamp.Add(time.Second * time.Duration(service.Interval))
-					if time.Now().Before(newTestTime) {
-						mutex.Unlock()
-						continue
-					}
-				}
-				mutex.Unlock()
-
+			go func(s *services.Service) {
 				var result *checkers.CheckResult
-				checker, checkerOK := checkers.Checkers[service.CheckerName]
+				checker, checkerOK := checkers.Checkers[s.CheckerName]
 				if checkerOK {
-					result = checker.RunTest(service)
+					result = checker.RunTest(s)
 				} else {
 					checkers.CheckerNotFoundRes.TimeStamp = time.Now()
-					checkers.CheckerNotFoundRes.Service = service
+					checkers.CheckerNotFoundRes.Service = s
 					result = checkers.CheckerNotFoundRes
 				}
 
 				mutex.Lock()
+				exisRes, exisResOk := results[s.Name]
+
 				if exisResOk {
 					result.LastResult = exisRes
 				}
@@ -43,11 +39,11 @@ func runResultCollector(results map[string]*checkers.CheckResult, mutex *sync.Mu
 					notificationChannel <- result
 				}
 
-				results[service.Name] = result
+				results[s.Name] = result
 				mutex.Unlock()
-			}
-
-			time.Sleep(time.Second)
+			}(service)
 		}
-	}()
+
+		time.Sleep(time.Second)
+	}
 }

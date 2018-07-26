@@ -40,6 +40,11 @@ func LoadConfig() {
 		clog.Fatal(0, "Error parsing config file: %v", err)
 	}
 
+	for _, service := range loadedConfig.Services {
+		clog.Trace("Loaded Service '%s': Checker: %s; Interval: %v; Config: %v", service.Name, service.CheckerName, service.Interval, service.Config)
+	}
+	clog.Trace("Loaded TelegramUsers: %v", loadedConfig.TelegramUsers)
+
 	services.Services = loadedConfig.Services
 	TelegramUsers = loadedConfig.TelegramUsers
 }

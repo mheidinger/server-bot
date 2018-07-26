@@ -5,8 +5,12 @@ import (
 	"strings"
 	"time"
 
+	"gopkg.in/clog.v1"
+
 	"github.com/mheidinger/server-bot/services"
 )
+
+const defaultExpRes = 200
 
 // HTTPGetChecker represents a checker that checks http requests for wanted response codes
 type HTTPGetChecker struct {
@@ -31,10 +35,14 @@ func (checker *HTTPGetChecker) RunTest(service *services.Service) *CheckResult {
 	}
 	url = checker.sanitizeURL(url)
 
-	var expRes = 200
-	if expRespInt, ok := service.Config["expected_resp"]; ok {
-		expRes, _ = expRespInt.(int)
+	var expRes = defaultExpRes
+	if expRespInt, ok := service.Config["expected_response"]; ok {
+		if expRes, ok = expRespInt.(int); !ok {
+			expRes = defaultExpRes
+		}
 	}
+
+	clog.Trace("Run HTTPGetChecker against %s: expRes: %v", url, expRes)
 
 	t1 := time.Now()
 	response, err := checker.httpClient.Get(url)
