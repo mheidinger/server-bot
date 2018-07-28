@@ -31,4 +31,15 @@ func Init() {
 	Checkers["TCPDialChecker"] = NewTCPDialChecker()
 	Checkers["MemChecker"] = NewMemChecker()
 	Checkers["CPUChecker"] = NewCPUChecker()
+	Checkers["TempChecker"] = NewTempChecker()
+}
+
+func defaultNeedsNotification(checkResult *CheckResult) bool {
+	if checkResult.LastResult != nil && checkResult.Success != checkResult.LastResult.Success {
+		return true
+	} else if checkResult.LastResult == nil && checkResult.Success == false {
+		return true
+	}
+
+	return false
 }

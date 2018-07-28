@@ -56,11 +56,5 @@ func (checker *MemChecker) RunTest(service *services.Service) *CheckResult {
 
 // NeedsNotification returns whether the result needs to be notified depending on lastResult
 func (checker *MemChecker) NeedsNotification(checkResult *CheckResult) bool {
-	if checkResult.LastResult != nil && checkResult.Success != checkResult.LastResult.Success {
-		return true
-	} else if checkResult.LastResult == nil && checkResult.Success == false {
-		return true
-	}
-
-	return false
+	return defaultNeedsNotification(checkResult)
 }

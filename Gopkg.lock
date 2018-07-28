@@ -44,8 +44,10 @@
   name = "github.com/shirou/gopsutil"
   packages = [
     "cpu",
+    "host",
     "internal/common",
-    "mem"
+    "mem",
+    "process"
   ]
   revision = "4a180b209f5f494e5923cfce81ea30ba23915877"
   version = "v2.18.06"
@@ -74,6 +76,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "97e890bb5cfc099ee0d1c8a9c150f78688482e85989df538243aa0325dad77fb"
+  inputs-digest = "938897e1419423cee59329f59124f6ffe04be2dbf9d9af762afc95956e579d2e"
   solver-name = "gps-cdcl"
   solver-version = 1
